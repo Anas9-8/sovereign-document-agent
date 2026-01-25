@@ -1,5 +1,5 @@
 # PDF Reader - Extract text from German invoices
-# Author: Asmar
+# Author: Anas
 # Date: 2025-01-24
 
 from pypdf import PdfReader
