@@ -19,3 +19,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Output files
+extracted_data.json
+extracted_text.txt
