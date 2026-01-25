@@ -23,3 +23,9 @@ Thumbs.db
 # Output files
 extracted_data.json
 extracted_text.txt
+
+# Governance logs
+system.log
+audit_trail.json
+final_results.json
+
