@@ -1,0 +1,52 @@
+# Configuration for Sovereign Document Agent
+# All configurable parameters in one place
+
+# File Processing
+file_processing:
+  max_file_size_mb: 10
+  allowed_extensions:
+    - .pdf
+  temp_file_prefix: "temp_"
+
+# AI Model
+ai_model:
+  provider: "ollama"
+  model_name: "llama3.2:1b"
+  max_tokens: 1000
+  temperature: 0.1
+  prompt_max_chars: 500
+
+# Governance
+governance:
+  enable_logging: true
+  log_file: "system.log"
+  audit_file: "audit_trail.json"
+  
+  sensitive_keywords:
+    - "vertraulich"
+    - "confidential"
+    - "secret"
+    - "geheim"
+  
+  require_human_approval: true
+
+# Streamlit UI
+ui:
+  page_title: "Sovereign Document Agent"
+  page_icon: "🛡️"
+  language: "de"
+  
+  colors:
+    primary: "#0066cc"
+    success: "#28a745"
+    warning: "#ffc107"
+    error: "#dc3545"
+
+# Extraction Fields
+extraction:
+  fields:
+    - invoice_number
+    - invoice_date
+    - customer_name
+    - total_amount
+    - due_date
