@@ -1,5 +1,3 @@
-"""Measure RAG pipeline latency and performance."""
-
 import os
 import random
 from pathlib import Path
@@ -20,7 +18,6 @@ QUESTIONS = [
 
 
 def _ollama_available():
-    """Check if Ollama is reachable."""
     import urllib.request
     url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     try:
@@ -31,14 +28,12 @@ def _ollama_available():
 
 
 def _count_docs():
-    """Count supported files in the docs folder."""
     folder = Path(os.getenv("DOCS_PATH", "./data/docs"))
     exts = {".pdf", ".txt", ".docx", ".csv"}
     return len([f for f in folder.iterdir() if f.suffix.lower() in exts])
 
 
 def run_live():
-    """Run full pipeline benchmark against Ollama."""
     from src.ingestor import ingest_folder
     from src.pipeline import run_query
 
@@ -56,14 +51,13 @@ def run_live():
         result = run_query(question)
         ms = result["latency_ms"]
         latencies.append(ms)
-        print(f"  [{i:2d}/{len(QUESTIONS)}] {ms:5d}ms — {question}")
+        print(f"  [{i:2d}/{len(QUESTIONS)}] {ms:5d}ms -- {question}")
 
     return doc_count, latencies, False
 
 
 def run_synthetic():
-    """Generate synthetic benchmark results when Ollama is offline."""
-    print("Ollama not available — running synthetic benchmark.\n")
+    print("Ollama not available -- running synthetic benchmark.\n")
     doc_count = _count_docs()
     print(f"  Documents found: {doc_count}")
 
@@ -72,23 +66,19 @@ def run_synthetic():
 
     print(f"\nSynthetic latencies for {len(QUESTIONS)} queries:\n")
     for i, (question, ms) in enumerate(zip(QUESTIONS, latencies), 1):
-        print(f"  [{i:2d}/{len(QUESTIONS)}] {ms:5d}ms — {question}")
+        print(f"  [{i:2d}/{len(QUESTIONS)}] {ms:5d}ms -- {question}")
 
     return doc_count, latencies, True
 
 
 def compute_p95(latencies):
-    """Return the P95 latency value."""
-    sorted_lat = sorted(latencies)
-    idx = int(len(sorted_lat) * 0.95)
-    return sorted_lat[min(idx, len(sorted_lat) - 1)]
+    s = sorted(latencies)
+    return s[min(int(len(s) * 0.95), len(s) - 1)]
 
 
 def print_summary(doc_count, latencies):
-    """Print the summary table."""
     avg = sum(latencies) // len(latencies)
     p95 = compute_p95(latencies)
-
     print("\n" + "=" * 55)
     print(f"{'Total docs':<15} | {'Total queries':<15} | {'Avg latency':<13} | {'P95 latency'}")
     print("-" * 55)
@@ -97,18 +87,14 @@ def print_summary(doc_count, latencies):
 
 
 def save_results(doc_count, latencies, synthetic=False):
-    """Save benchmark results as a markdown table."""
     avg = sum(latencies) // len(latencies)
     p95 = compute_p95(latencies)
 
-    lines = [
-        "# Benchmark Results\n",
-    ]
-
+    lines = ["# Benchmark Results\n"]
     if synthetic:
         lines.append(
             "> Results from synthetic run"
-            " — connect Ollama for live measurements.\n"
+            " -- connect Ollama for live measurements.\n"
         )
 
     lines += [
@@ -135,7 +121,7 @@ def save_results(doc_count, latencies, synthetic=False):
 
 def main():
     print("=" * 55)
-    print("SOVEREIGN DOCUMENT AGENT — BENCHMARK")
+    print("SOVEREIGN DOCUMENT AGENT -- BENCHMARK")
     print("=" * 55)
 
     if _ollama_available():

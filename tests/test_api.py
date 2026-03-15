@@ -1,5 +1,3 @@
-"""Tests for FastAPI endpoints (mocked backends)."""
-
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -11,7 +9,6 @@ client = TestClient(app)
 
 @patch("api.routes.registry")
 def test_health_endpoint_returns_ok(mock_registry):
-    """Health check should return status ok."""
     mock_registry.count.return_value = 0
     response = client.get("/health")
     assert response.status_code == 200
@@ -20,7 +17,6 @@ def test_health_endpoint_returns_ok(mock_registry):
 
 @patch("api.routes.run_query")
 def test_query_endpoint_validates_empty_question(mock_query):
-    """An empty question should return a valid response."""
     mock_query.return_value = {
         "answer": "No answer found.",
         "sources": [],
@@ -33,11 +29,9 @@ def test_query_endpoint_validates_empty_question(mock_query):
 
 @patch("api.routes.registry")
 def test_documents_endpoint_returns_list(mock_registry):
-    """Documents endpoint should return a list and total count."""
     mock_registry.get_all.return_value = [
         {"filename": "test.pdf", "chunk_count": 5, "status": "ok"}
     ]
-
     response = client.get("/documents")
     assert response.status_code == 200
     data = response.json()

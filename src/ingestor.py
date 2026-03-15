@@ -1,5 +1,3 @@
-"""Document loading, chunking, embedding, and storage."""
-
 import os
 import time
 from pathlib import Path
@@ -16,23 +14,22 @@ from src import registry
 
 logger = get_logger(__name__)
 
+SUPPORTED_EXT = {".pdf", ".txt", ".docx", ".csv"}
+
 
 def _get_vectorstore():
-    """Return the persistent ChromaDB vectorstore."""
-    chroma_path = os.getenv("CHROMA_PATH", "./data/chroma")
     embeddings = OllamaEmbeddings(
         model=os.getenv("OLLAMA_MODEL", "llama3"),
         base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
     )
     return Chroma(
         collection_name="documents",
-        persist_directory=chroma_path,
+        persist_directory=os.getenv("CHROMA_PATH", "./data/chroma"),
         embedding_function=embeddings,
     )
 
 
 def load_document(file_path):
-    """Load a file and return its raw text."""
     path = Path(file_path)
     ext = path.suffix.lower()
 
@@ -52,7 +49,6 @@ def load_document(file_path):
 
 
 def chunk_text(text):
-    """Split text into chunks using LangChain splitter."""
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=int(os.getenv("CHUNK_SIZE", "500")),
         chunk_overlap=int(os.getenv("CHUNK_OVERLAP", "50")),
@@ -63,16 +59,14 @@ def chunk_text(text):
 
 
 def _store_chunks(chunks, source_name):
-    """Embed and store chunks in ChromaDB."""
-    vectorstore = _get_vectorstore()
+    vs = _get_vectorstore()
     metadatas = [{"source": source_name}] * len(chunks)
     ids = [f"{source_name}_{i}" for i in range(len(chunks))]
-    vectorstore.add_texts(texts=chunks, metadatas=metadatas, ids=ids)
+    vs.add_texts(texts=chunks, metadatas=metadatas, ids=ids)
     logger.info("Stored %d chunks for %s", len(chunks), source_name)
 
 
 def ingest_file(file_path, force=False):
-    """Validate, load, chunk, embed, store, and register a document."""
     path = Path(file_path)
 
     if not force and registry.is_indexed(path.name):
@@ -96,11 +90,7 @@ def ingest_file(file_path, force=False):
 
 
 def ingest_folder(folder_path=None):
-    """Ingest all supported files in a folder."""
     folder = Path(folder_path or os.getenv("DOCS_PATH", "./data/docs"))
-    supported = {".pdf", ".txt", ".docx", ".csv"}
-
-    files = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in supported]
+    files = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in SUPPORTED_EXT]
     logger.info("Found %d supported files in %s", len(files), folder)
-
     return [ingest_file(str(f)) for f in sorted(files)]

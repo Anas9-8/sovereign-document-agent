@@ -30,13 +30,13 @@ graph LR
 | Vector Store | ChromaDB (persistent) |
 | Orchestration | LangChain |
 | API | FastAPI + Uvicorn |
-| PDF Parsing | pypdf |
+| Document Parsing | pypdf, python-docx |
 | Containerization | Docker + docker-compose |
 | CI/CD | GitHub Actions |
 
 ## Features
 
-- Ingest PDF, TXT, and CSV documents into a persistent vector store
+- Ingest PDF, DOCX, TXT, and CSV documents into a persistent vector store
 - Retrieve relevant chunks via similarity search against ChromaDB
 - Generate answers grounded in retrieved context using a local Ollama model
 - REST API with endpoints for ingestion, querying, document listing, and health checks

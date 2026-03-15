@@ -1,40 +1,21 @@
-# Virtual Environment
 venv/
-
-# Python cache
 __pycache__/
 *.pyc
 *.pyo
 
-# IDE
 .vscode/
 .idea/
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Environment variables
 .env
 
-# Logs
 logs/
 *.log
 
-# Cache
 .pytest_cache/
 .ruff_cache/
 
-# ChromaDB and runtime data
 data/chroma/
 data/registry.json
-
-# Output files
-extracted_data.json
-extracted_text.txt
-
-# Governance logs
-system.log
-audit_trail.json
-final_results.json
-

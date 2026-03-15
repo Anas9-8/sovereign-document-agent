@@ -1,5 +1,3 @@
-"""All API endpoints."""
-
 import os
 
 from fastapi import APIRouter
@@ -46,28 +44,22 @@ class HealthResponse(BaseModel):
 
 @router.post("/ingest", response_model=IngestResponse)
 def ingest_document(req: IngestRequest):
-    """Ingest a document into the vector store."""
-    result = ingest_file(req.file_path)
-    return result
+    return ingest_file(req.file_path)
 
 
 @router.post("/query", response_model=QueryResponse)
 def query_documents(req: QueryRequest):
-    """Query the RAG pipeline with a question."""
-    result = run_query(req.question, top_k=req.top_k)
-    return result
+    return run_query(req.question, top_k=req.top_k)
 
 
 @router.get("/documents", response_model=DocumentsResponse)
 def list_documents():
-    """List all indexed documents."""
     docs = registry.get_all()
     return {"documents": docs, "total": len(docs)}
 
 
 @router.get("/health", response_model=HealthResponse)
 def health_check():
-    """Health check."""
     return {
         "status": "ok",
         "indexed_docs": registry.count(),

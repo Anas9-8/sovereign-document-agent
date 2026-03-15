@@ -1,20 +1,25 @@
-"""Create 3 realistic German mock PDF documents for benchmarking."""
-
 from fpdf import FPDF
 
 
-def create_rechnung():
-    """German invoice."""
+def _pdf():
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Helvetica", size=11)
+    pdf.set_font("Helvetica", size=10)
+    return pdf
 
+
+def _write_lines(pdf, lines):
+    for line in lines:
+        pdf.cell(0, 5, line, new_x="LMARGIN", new_y="NEXT")
+
+
+def create_rechnung():
+    pdf = _pdf()
     pdf.set_font("Helvetica", "B", 16)
     pdf.cell(0, 10, "Rechnung", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
-
     pdf.set_font("Helvetica", size=10)
-    lines = [
+    _write_lines(pdf, [
         "Rechnungsnummer: RE-2024-001",
         "Rechnungsdatum: 15.03.2024",
         "",
@@ -48,26 +53,18 @@ def create_rechnung():
         "Commerzbank Muenchen",
         "",
         "Vielen Dank fuer Ihren Auftrag!",
-    ]
-
-    for line in lines:
-        pdf.cell(0, 5, line, new_x="LMARGIN", new_y="NEXT")
-
+    ])
     pdf.output("data/docs/rechnung_2024_001.pdf")
     print("Created: rechnung_2024_001.pdf")
 
 
 def create_datenblatt():
-    """Technical data sheet."""
-    pdf = FPDF()
-    pdf.add_page()
-
+    pdf = _pdf()
     pdf.set_font("Helvetica", "B", 16)
     pdf.cell(0, 10, "Technisches Datenblatt", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
-
     pdf.set_font("Helvetica", size=10)
-    lines = [
+    _write_lines(pdf, [
         "Produktname: IndustrieController X200",
         "Modellnummer: IC-X200-PRO",
         "Hersteller: AutomaTech AG, Stuttgart",
@@ -101,26 +98,18 @@ def create_datenblatt():
         "E-Mail: info@automatech-ag.example.de",
         "",
         "Stand: Maerz 2024 | Technische Aenderungen vorbehalten.",
-    ]
-
-    for line in lines:
-        pdf.cell(0, 5, line, new_x="LMARGIN", new_y="NEXT")
-
+    ])
     pdf.output("data/docs/datenblatt_produkt_x200.pdf")
     print("Created: datenblatt_produkt_x200.pdf")
 
 
 def create_vertrag():
-    """Service contract summary."""
-    pdf = FPDF()
-    pdf.add_page()
-
+    pdf = _pdf()
     pdf.set_font("Helvetica", "B", 16)
     pdf.cell(0, 10, "Dienstleistungsvertrag", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
-
     pdf.set_font("Helvetica", size=10)
-    lines = [
+    _write_lines(pdf, [
         "Vertragsnummer: DV-2024-0042",
         "",
         "Vertragsparteien:",
@@ -155,11 +144,7 @@ def create_vertrag():
         "____________________________    ____________________________",
         "Mustermann Logistik GmbH        TechSolutions GmbH",
         "Hamburg, 15.03.2024              Muenchen, 15.03.2024",
-    ]
-
-    for line in lines:
-        pdf.cell(0, 5, line, new_x="LMARGIN", new_y="NEXT")
-
+    ])
     pdf.output("data/docs/vertrag_dienstleistung_2024.pdf")
     print("Created: vertrag_dienstleistung_2024.pdf")
 

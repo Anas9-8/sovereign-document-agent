@@ -1,6 +1,6 @@
 # Benchmark Results
 
-> Results from synthetic run — connect Ollama for live measurements.
+> Results from synthetic run -- connect Ollama for live measurements.
 
 | Metric | Value |
 |--------|-------|

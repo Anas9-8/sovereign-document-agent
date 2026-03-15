@@ -1,9 +1,5 @@
-"""File validation before ingestion."""
-
 import os
 from pathlib import Path
-
-from pydantic import BaseModel
 
 from src.logger import get_logger
 
@@ -12,15 +8,7 @@ logger = get_logger(__name__)
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".docx", ".csv"}
 
 
-class DocumentInfo(BaseModel):
-    """Metadata about a validated document."""
-    filename: str
-    size_kb: float
-    extension: str
-
-
 def validate_file(file_path):
-    """Return (True, '') if file is valid for ingestion, (False, reason) otherwise."""
     path = Path(file_path)
 
     if not path.exists():
