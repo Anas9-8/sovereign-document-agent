@@ -18,7 +18,16 @@ Thumbs.db
 .env
 
 # Logs
+logs/
 *.log
+
+# Cache
+.pytest_cache/
+.ruff_cache/
+
+# ChromaDB and runtime data
+data/chroma/
+data/registry.json
 
 # Output files
 extracted_data.json

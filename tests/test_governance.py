@@ -17,27 +17,27 @@ def test_guardrail_check_valid_file():
         pytest.skip("Sample PDF not found")
 
     passed, msg = governance.check_file_guardrails("rechnung_beispiel.pdf")
-    assert passed == True, f"Valid file failed guardrail: {msg}"
+    assert passed, f"Valid file failed guardrail: {msg}"
 
 
 def test_guardrail_check_missing_file():
     """Test guardrail check with missing file"""
     passed, msg = governance.check_file_guardrails("nonexistent.pdf")
-    assert passed == False, "Guardrail should fail for missing file"
+    assert not passed, "Guardrail should fail for missing file"
 
 
 def test_content_sensitivity_clean():
     """Test sensitivity check with clean content"""
     clean_text = "This is a normal invoice with standard content."
     is_sensitive, keywords = governance.check_content_sensitivity(clean_text)
-    assert is_sensitive == False, "Clean text marked as sensitive"
+    assert not is_sensitive, "Clean text marked as sensitive"
 
 
 def test_content_sensitivity_with_keywords():
     """Test sensitivity check with sensitive keywords"""
     sensitive_text = "This is a confidential document with secret information."
     is_sensitive, keywords = governance.check_content_sensitivity(sensitive_text)
-    assert is_sensitive == True, "Sensitive content not detected"
+    assert is_sensitive, "Sensitive content not detected"
     assert len(keywords) > 0, "No keywords found"
 
 
