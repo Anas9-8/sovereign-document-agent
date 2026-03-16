@@ -19,3 +19,12 @@ logs/
 
 data/chroma/
 data/registry.json
+
+CLAUDE.md
+*.save
+audit_trail.json
+extracted_data.json
+extracted_text.txt
+final_results.json
+streamlit_results.json
+benchmark_results.md

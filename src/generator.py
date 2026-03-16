@@ -7,13 +7,16 @@ from src.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMPT = """Answer only based on the context below. If the answer is not there, say so.
+PROMPT = """You are a precise document assistant.
+You MUST answer based ONLY on the context below.
+Extract the exact answer from the text. Do not guess.
 
 Context:
 {context}
 
 Question: {question}
-Answer:"""
+
+Give a short, direct answer using only the information above:"""
 
 
 def _get_llm():
