@@ -25,7 +25,7 @@ graph LR
 
 | Component | Technology |
 |-----------|------------|
-| LLM | Ollama (llama3, local) |
+| LLM | Ollama (llama3.2:1b, local) |
 | Embeddings | Ollama Embeddings |
 | Vector Store | ChromaDB (persistent) |
 | Orchestration | LangChain |
@@ -61,7 +61,7 @@ cp .env.example .env
 docker compose up
 ```
 
-> Ollama must be running on the host with your chosen model pulled (`ollama pull llama3`).
+> Ollama must be running on the host with your chosen model pulled (`ollama pull llama3.2:1b`).
 
 ## API Reference
 
@@ -76,7 +76,7 @@ docker compose up
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OLLAMA_MODEL` | `llama3` | Ollama model for LLM and embeddings |
+| `OLLAMA_MODEL` | `llama3.2:1b` | Ollama model for LLM and embeddings |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
 | `CHROMA_PATH` | `./data/chroma` | ChromaDB persistent storage path |
 | `DOCS_PATH` | `./data/docs` | Directory to scan for documents |
@@ -107,6 +107,20 @@ python scripts/benchmark.py
 ## Benchmark Results
 
 See `benchmark_results.md` after running the benchmark script.
+
+## Known Issues
+
+**Port 8000 already in use:** If another process is occupying port 8000, start the server on a different port:
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port 8001
+```
+
+**ChromaDB dimension mismatch:** If you change `OLLAMA_MODEL`, the existing ChromaDB collection will have incompatible embedding dimensions. Delete and re-index:
+```bash
+rm -rf data/chroma/
+echo "[]" > data/registry.json
+PYTHONPATH=. python scripts/ingest_cli.py
+```
 
 ## License
 
