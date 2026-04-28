@@ -7,32 +7,56 @@ from src.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMPT = """You are a precise document assistant.
-You MUST answer based ONLY on the context below.
-Extract the exact answer from the text. Do not guess.
+PROMPT = """Answer based on the context below. Cite the source filename in your answer.
 
 Context:
 {context}
 
 Question: {question}
 
-Give a short, direct answer using only the information above:"""
+Answer:"""
+
+
+_llm_instance = None
 
 
 def _get_llm():
-    return OllamaLLM(
-        model=os.getenv("OLLAMA_MODEL", "llama3"),
-        base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
-    )
+    global _llm_instance
+    if _llm_instance is None:
+        _llm_instance = OllamaLLM(
+            model=os.getenv("OLLAMA_MODEL", "llama3.2:1b"),
+            base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
+        )
+    return _llm_instance
 
 
 def generate_answer(question, context_chunks):
-    context = "\n\n".join(chunk["text"] for chunk in context_chunks)
+    if not context_chunks:
+        return {
+            "answer": "I don't have any relevant information to answer this question.",
+            "latency_ms": 0,
+        }
+
+    sources = list({chunk.get("source", "unknown") for chunk in context_chunks})
+
+    context_parts = []
+    for i, chunk in enumerate(context_chunks[:5], 1):
+        source = chunk.get("source", "unknown")
+        text = chunk.get("text", "")
+        context_parts.append(f"[{source}]\n{text}")
+
+    context = "\n\n---\n\n".join(context_parts)
     prompt = PROMPT.format(context=context, question=question)
 
     start = time.time()
     answer = _get_llm().invoke(prompt)
     latency_ms = int((time.time() - start) * 1000)
 
-    logger.info("Generated answer in %dms", latency_ms)
+    logger.info(
+        "Generated answer in %dms using %d chunks from %d sources",
+        latency_ms,
+        len(context_chunks[:5]),
+        len(sources),
+    )
+
     return {"answer": answer.strip(), "latency_ms": latency_ms}

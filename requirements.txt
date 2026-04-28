@@ -11,6 +11,7 @@ python-dotenv==1.2.2
 # API
 fastapi==0.135.1
 uvicorn==0.41.0
+python-multipart==0.0.9
 
 # Testing & QA
 pytest==9.0.2

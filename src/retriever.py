@@ -1,30 +1,20 @@
 import os
 
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-
+from src.vectorstore import get_vectorstore
 from src.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def _get_vectorstore():
-    embeddings = OllamaEmbeddings(
-        model=os.getenv("OLLAMA_MODEL", "llama3"),
-        base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
-    )
-    return Chroma(
-        collection_name="documents",
-        persist_directory=os.getenv("CHROMA_PATH", "./data/chroma"),
-        embedding_function=embeddings,
-    )
-
-
 def get_relevant_chunks(question, top_k=None):
     if top_k is None:
-        top_k = int(os.getenv("TOP_K_RESULTS", "3"))
+        top_k = int(os.getenv("TOP_K_RESULTS", "5"))
 
-    results = _get_vectorstore().similarity_search_with_relevance_scores(question, k=top_k)
+    vs = get_vectorstore()
+    results = vs.similarity_search_with_relevance_scores(question, k=top_k)
+
+    logger.info("Retrieved %d chunks for query: '%s...'", len(results), question[:50])
+
     chunks = [
         {
             "text": doc.page_content,
@@ -33,9 +23,12 @@ def get_relevant_chunks(question, top_k=None):
         }
         for doc, score in results
     ]
-    logger.info("Query: '%s...' — %d chunks found", question[:60], len(chunks))
+
+    for chunk in chunks:
+        logger.debug("  - %s (score: %.4f)", chunk["source"], chunk["score"])
+
     return chunks
 
 
 def get_collection_size():
-    return _get_vectorstore()._collection.count()
+    return get_vectorstore()._collection.count()
